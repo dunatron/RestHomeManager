@@ -16,16 +16,21 @@ rule.minute = null;
 // })
 // scheduler.scheduleJob(rule,j);
 
-const db =  new Prisma({
+const db = new Prisma({
   typeDefs: "src/generated/prisma.graphql",
   endpoint: "https://us1.prisma.sh/heath-dunlop-37e897/RestHomeManager/dev",
-  secret: "win-win-win",
+  secret: "so-secret",
   debug: true,
 })
 const doSomeStuff = async () =>   {
+  try {
+    const allUsers = await db.query.users(null,`{ id name email }`); //pass additional fields here yo wanna get
+    console.log("allUserSoFar ->", allUsers)
+  }
+  catch(e) {
+    console.log("e ->", e)
+  }
   
-  const allUsers = await db.query.users(null,`{ id name email }`); //pass additional fields here yo wanna get
-  console.log("allUserSoFar ->", allUserSoFar)
 }
 
 console.log("Please schedule ") 
@@ -34,16 +39,11 @@ scheduler.scheduleJob(rule, function(){
   doSomeStuff()
 })
 
-
-
 const resolvers = {
   Query,
   Mutation,
-  AuthPayload,
+  // AuthPayload,
 }
-
-
-
 
 // 3
 const server = new GraphQLServer({
