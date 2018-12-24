@@ -22,6 +22,17 @@ type Patient {
   family: [User!]!
   contacts: [PatientContact!]! @relation(name: "PatientContacts", onDelete: CASCADE)
   organisation: Organisation @relation(name: "OrgPatients")
+  tasks: [Task!]!
+}
+
+type Task {
+  id: ID! @unique
+  name: String!
+  complete: Boolean!
+  note: String
+  checkAt: [DateTime!]! # what time(s) should this be checked at
+  taskDays: [DAYS_OF_THE_WEEK!]! # what days should this task be run
+  saveAsTemplate: Boolean
 }
 
 type PatientContact {
@@ -45,4 +56,14 @@ enum CARE_LEVEL {
   REST_HOME
   DEMENTIA
   HOSPITAL_CARE
+}
+
+enum DAYS_OF_THE_WEEK {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY 
+  SATURDAY
 }
