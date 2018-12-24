@@ -26,9 +26,6 @@ module.exports = {
   organisation,
   allOrganisations,
   getUser,
-  orgDataConfigs,
-  singleDocument,
-  documentFeed,
   allUsers,
   info,
 }
