@@ -16,12 +16,15 @@ rule.minute = null;
 // })
 // scheduler.scheduleJob(rule,j);
 
+const db =  new Prisma({
+  typeDefs: "src/generated/prisma.graphql",
+  endpoint: "https://us1.prisma.sh/heath-dunlop-37e897/RestHomeManager/dev",
+  secret: "win-win-win",
+  debug: true,
+})
 const doSomeStuff = async () =>   {
-  async function allUsers(root, args, context, info) {
-    const theUsers = await context.db.query.users({}, info)
-    return theUsers
-  }
-  const allUserSoFar = allUsers()
+  
+  const allUsers = await db.query.users(null,`{ id name email }`); //pass additional fields here yo wanna get
   console.log("allUserSoFar ->", allUserSoFar)
 }
 
@@ -39,6 +42,9 @@ const resolvers = {
   AuthPayload,
 }
 
+
+
+
 // 3
 const server = new GraphQLServer({
   typeDefs: "./src/schema.graphql",
@@ -48,12 +54,7 @@ const server = new GraphQLServer({
   },
   context: req => ({
     ...req,
-    db: new Prisma({
-      typeDefs: "src/generated/prisma.graphql",
-      endpoint: "https://us1.prisma.sh/heath-dunlop-37e897/RestHomeManager/dev",
-      secret: "win-win-win",
-      debug: true,
-    }),
+    db,
   }),
 })
 server.start(() => console.log(`Server is running on http://localhost:4000`))
