@@ -1,0 +1,48 @@
+type Organisation {
+  id: ID! @unique
+  name: String
+  users: [User!]!
+  patients: [Patient!]! @relation(name: "OrgPatients", onDelete: SET_NULL)
+}
+
+type User {
+  id: ID! @unique
+  name: String!
+  email: String! @unique
+  password: String!
+  role: ROLE! @default(value: "FAMILY")
+  organisations: [Organisation!]!
+}
+              
+type Patient {
+  id: ID! @unique
+  name: String!
+  dob: DateTime!
+  careLevel: CARE_LEVEL @default(value: "REST_HOME")
+  family: [User!]!
+  contacts: [PatientContact!]! @relation(name: "PatientContacts", onDelete: CASCADE)
+  organisation: Organisation @relation(name: "OrgPatients")
+}
+
+type PatientContact {
+  id: ID! @unique
+  name: String!
+  address: String
+  homePhone: String
+  mobilePhone: String
+  forPatient: Patient!  @relation(name: "PatientContacts")
+}
+
+enum ROLE {
+  MANAGER
+  NURSE
+  CAREGIVER
+  FAMILY  
+  WIZARD
+}
+
+enum CARE_LEVEL {
+  REST_HOME
+  DEMENTIA
+  HOSPITAL_CARE
+}
