@@ -13,15 +13,17 @@ type User {
   role: ROLE! @default(value: "FAMILY")
   organisations: [Organisation!]!
 }
-              
+
 type Patient {
   id: ID! @unique
   name: String!
   dob: DateTime!
   careLevel: CARE_LEVEL @default(value: "REST_HOME")
   family: [User!]!
-  contacts: [PatientContact!]! @relation(name: "PatientContacts", onDelete: CASCADE)
+  contacts: [PatientContact!]!
+    @relation(name: "PatientContacts", onDelete: CASCADE)
   organisation: Organisation @relation(name: "OrgPatients")
+  assignedTasks: [Task!]!
   tasks: [Task!]!
 }
 
@@ -29,7 +31,10 @@ type Task {
   id: ID! @unique
   name: String!
   complete: Boolean!
+  completedAt: DateTime
+  priorityLevel: PRIORITY_LEVEL
   note: String
+  alertBefore: DateTime # amount of given before the event
   checkAt: [DateTime!]! # what time(s) should this be checked at
   taskDays: [DAYS_OF_THE_WEEK!]! # what days should this task be run
   saveAsTemplate: Boolean
@@ -41,14 +46,14 @@ type PatientContact {
   address: String
   homePhone: String
   mobilePhone: String
-  forPatient: Patient!  @relation(name: "PatientContacts")
+  forPatient: Patient! @relation(name: "PatientContacts")
 }
 
 enum ROLE {
   MANAGER
   NURSE
   CAREGIVER
-  FAMILY  
+  FAMILY
   WIZARD
 }
 
@@ -64,6 +69,19 @@ enum DAYS_OF_THE_WEEK {
   TUESDAY
   WEDNESDAY
   THURSDAY
-  FRIDAY 
+  FRIDAY
   SATURDAY
+}
+
+enum PRIORITY_LEVEL {
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+  10
 }
