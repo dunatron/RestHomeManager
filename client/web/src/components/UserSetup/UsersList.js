@@ -8,7 +8,7 @@ import { Query } from "react-apollo"
 import UserCard from "./UserCard"
 // Mutations
 import { CHANGE_USER_ROLE } from "../../mutations/changeUserRole.js"
-// Github has been ysuin tron silver...sdf df s
+// Github has been ysuin tron silver...sdf df sdfsdfs
 class UsersList extends Component {
   _getQueryVariables = () => {
     const idFromPath = this.props.location.pathname.split("/")[2] // this is highly unstable, change asap
