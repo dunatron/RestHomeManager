@@ -23,8 +23,7 @@ type Patient {
   contacts: [PatientContact!]!
     @relation(name: "PatientContacts", onDelete: CASCADE)
   organisation: Organisation @relation(name: "OrgPatients")
-  assignedTasks: [Task!]!
-  tasks: [Task!]!
+  tasks: [Task!]! @relation(name: "PatientTasks")
 }
 
 type Task {
@@ -32,12 +31,14 @@ type Task {
   name: String!
   complete: Boolean!
   completedAt: DateTime
-  priorityLevel: PRIORITY_LEVEL
+  priorityLevel: Int
   note: String
   alertBefore: DateTime # amount of given before the event
   checkAt: [DateTime!]! # what time(s) should this be checked at
   taskDays: [DAYS_OF_THE_WEEK!]! # what days should this task be run
+  repeat: Boolean!
   saveAsTemplate: Boolean
+  forPatient: Patient @relation(name: "PatientTasks")
 }
 
 type PatientContact {
@@ -71,17 +72,4 @@ enum DAYS_OF_THE_WEEK {
   THURSDAY
   FRIDAY
   SATURDAY
-}
-
-enum PRIORITY_LEVEL {
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
-  10
 }

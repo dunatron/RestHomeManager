@@ -13,7 +13,7 @@ async function signup(parent, args, context, info) {
     {
       data: { ...args, password },
     },
-    `{ id }`
+    `{ id password name email role }`
   )
 
   // 3
@@ -30,7 +30,7 @@ async function login(parent, args, context, info) {
   // 1
   const user = await context.db.query.user(
     { where: { email: args.email } },
-    ` { id password } `
+    ` { id password name email role } `
   )
   if (!user) {
     throw new Error("No such user found")
@@ -41,6 +41,8 @@ async function login(parent, args, context, info) {
   if (!valid) {
     throw new Error("Invalid password")
   }
+
+  console.log("A User being logged in... -> ", user)
 
   const token = jwt.sign({ userId: user.id }, APP_SECRET)
 

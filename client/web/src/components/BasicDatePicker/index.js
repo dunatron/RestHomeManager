@@ -51,6 +51,7 @@ const styles = theme => ({
   container: {
     display: "flex",
     flexDirection: "column",
+    margin: theme.spacing.unit * 2,
   },
   MuiIconButton: {
     color: theme.palette.secondary.main,

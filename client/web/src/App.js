@@ -14,9 +14,23 @@ import indexRoutes from "./routes/index"
 
 import UserSetupPage from "./pages/UserSetupPage"
 
+import SetOrganisation from "./components/SetOrganisation/index"
+
 class App extends Component {
   render() {
+    const { history } = this.props
+    const { pathname } = history.location
     const authToken = localStorage.getItem(AUTH_TOKEN)
+    const orgId = localStorage.getItem(ORGANISATION_ID)
+
+    if (!orgId && pathname !== "/setorg") {
+      this.props.history.push("/setorg")
+      // return (
+      //   <div>
+      //     <SetOrganisation />
+      //   </div>
+      // )
+    }
 
     if (!authToken) {
       return (
@@ -32,6 +46,7 @@ class App extends Component {
         <AppBarContainer />
         <div>
           <Switch>
+            <Route exact path="/setorg" component={SetOrganisation} />
             {indexRoutes.map((prop, key) => {
               return (
                 <Route

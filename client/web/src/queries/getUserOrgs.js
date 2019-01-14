@@ -1,12 +1,10 @@
 import gql from "graphql-tag"
 
-export const ALL_USERS = gql`
+export const USER_ORGANISATIONS = gql`
   query {
-    allUsers {
+    getUser {
       id
       name
-      email
-      role
       organisations {
         id
         name

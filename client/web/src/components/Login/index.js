@@ -12,8 +12,13 @@ import { setUserDetails } from "../../actions/userActions"
 import { connect } from "react-redux"
 
 const SIGNUP_MUTATION = gql`
-  mutation SignupMutation($email: String!, $password: String!, $name: String!) {
-    signup(email: $email, password: $password, name: $name) {
+  mutation SignupMutation(
+    $email: String!
+    $password: String!
+    $name: String!
+    $role: ROLE!
+  ) {
+    signup(email: $email, password: $password, name: $name, role: $role) {
       token
       user {
         id
@@ -66,17 +71,21 @@ class Login extends Component {
     email: "",
     password: "",
     name: "",
+    role: "FAMILY",
   }
 
   render() {
-    const { login, email, password, name } = this.state
+    const { login, email, password, name, role } = this.state
     const { classes } = this.props
     return (
       <div className={classes.container}>
         <h1 className={classes.title}>{login ? "Login" : "Sign Up"}</h1>
         <Mutation
           mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
-          variables={{ email, password, name }}
+          // variables={{ email, password, name, role }}
+          variables={
+            login ? { email, password, name } : { email, password, name, role }
+          }
           onCompleted={data => this._confirm(data)}>
           {(mutation, { loading, error, data }) => (
             <Fragment>

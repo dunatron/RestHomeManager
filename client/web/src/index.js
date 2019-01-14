@@ -14,10 +14,6 @@ import { split } from "apollo-link"
 import { WebSocketLink } from "apollo-link-ws"
 import { getMainDefinition } from "apollo-utilities"
 
-import customTheme from "./theme"
-import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider"
-import { createMuiTheme } from "@material-ui/core/styles"
-
 // Take a look at this and see if it is better than reatcf dev tools at quickly identifingy bottle necks
 // https://reactjs.org/blog/2018/09/10/introducing-the-react-profiler.html
 
@@ -27,6 +23,14 @@ import throttle from "lodash/throttle"
 import { PERSISTENT_STORE_KEYS_ARR } from "./constants"
 import store from "./state/store"
 import { Provider as Redux } from "react-redux"
+// Material Design
+/* eslint-disable */
+import customTheme from "./theme"
+import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider"
+import { createMuiTheme } from "@material-ui/core/styles"
+import MuiPickersUtilsProvider from "material-ui-pickers/MuiPickersUtilsProvider"
+// pick utils
+import MomentUtils from "@date-io/moment"
 
 // Redux function which will help us subscribe our store state, using our saveState function
 store.subscribe(
@@ -88,15 +92,17 @@ const client = new ApolloClient({
 })
 
 ReactDOM.render(
-  <Redux store={store}>
-    <BrowserRouter>
-      <ApolloProvider client={client}>
-        <MuiThemeProvider theme={muiTheme}>
-          <App />
-        </MuiThemeProvider>
-      </ApolloProvider>
-    </BrowserRouter>
-  </Redux>,
+  <MuiPickersUtilsProvider utils={MomentUtils}>
+    <Redux store={store}>
+      <BrowserRouter>
+        <ApolloProvider client={client}>
+          <MuiThemeProvider theme={muiTheme}>
+            <App />
+          </MuiThemeProvider>
+        </ApolloProvider>
+      </BrowserRouter>
+    </Redux>
+  </MuiPickersUtilsProvider>,
   document.getElementById("root")
 )
 registerServiceWorker()

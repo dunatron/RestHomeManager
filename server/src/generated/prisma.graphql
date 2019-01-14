@@ -1,5 +1,5 @@
 # source: https://us1.prisma.sh/heath-dunlop-37e897/RestHomeManager/dev
-# timestamp: Mon Dec 24 2018 19:20:48 GMT+1300 (New Zealand Daylight Time)
+# timestamp: Sat Jan 12 2019 23:44:26 GMT+1300 (New Zealand Daylight Time)
 
 type AggregateOrganisation {
   count: Int!
@@ -53,33 +53,33 @@ scalar Long
 type Mutation {
   createOrganisation(data: OrganisationCreateInput!): Organisation!
   createPatient(data: PatientCreateInput!): Patient!
-  createPatientContact(data: PatientContactCreateInput!): PatientContact!
   createTask(data: TaskCreateInput!): Task!
+  createPatientContact(data: PatientContactCreateInput!): PatientContact!
   createUser(data: UserCreateInput!): User!
   updateOrganisation(data: OrganisationUpdateInput!, where: OrganisationWhereUniqueInput!): Organisation
   updatePatient(data: PatientUpdateInput!, where: PatientWhereUniqueInput!): Patient
-  updatePatientContact(data: PatientContactUpdateInput!, where: PatientContactWhereUniqueInput!): PatientContact
   updateTask(data: TaskUpdateInput!, where: TaskWhereUniqueInput!): Task
+  updatePatientContact(data: PatientContactUpdateInput!, where: PatientContactWhereUniqueInput!): PatientContact
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   deleteOrganisation(where: OrganisationWhereUniqueInput!): Organisation
   deletePatient(where: PatientWhereUniqueInput!): Patient
-  deletePatientContact(where: PatientContactWhereUniqueInput!): PatientContact
   deleteTask(where: TaskWhereUniqueInput!): Task
+  deletePatientContact(where: PatientContactWhereUniqueInput!): PatientContact
   deleteUser(where: UserWhereUniqueInput!): User
   upsertOrganisation(where: OrganisationWhereUniqueInput!, create: OrganisationCreateInput!, update: OrganisationUpdateInput!): Organisation!
   upsertPatient(where: PatientWhereUniqueInput!, create: PatientCreateInput!, update: PatientUpdateInput!): Patient!
-  upsertPatientContact(where: PatientContactWhereUniqueInput!, create: PatientContactCreateInput!, update: PatientContactUpdateInput!): PatientContact!
   upsertTask(where: TaskWhereUniqueInput!, create: TaskCreateInput!, update: TaskUpdateInput!): Task!
+  upsertPatientContact(where: PatientContactWhereUniqueInput!, create: PatientContactCreateInput!, update: PatientContactUpdateInput!): PatientContact!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   updateManyOrganisations(data: OrganisationUpdateManyMutationInput!, where: OrganisationWhereInput): BatchPayload!
   updateManyPatients(data: PatientUpdateManyMutationInput!, where: PatientWhereInput): BatchPayload!
-  updateManyPatientContacts(data: PatientContactUpdateManyMutationInput!, where: PatientContactWhereInput): BatchPayload!
   updateManyTasks(data: TaskUpdateManyMutationInput!, where: TaskWhereInput): BatchPayload!
+  updateManyPatientContacts(data: PatientContactUpdateManyMutationInput!, where: PatientContactWhereInput): BatchPayload!
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
   deleteManyOrganisations(where: OrganisationWhereInput): BatchPayload!
   deleteManyPatients(where: PatientWhereInput): BatchPayload!
-  deleteManyPatientContacts(where: PatientContactWhereInput): BatchPayload!
   deleteManyTasks(where: TaskWhereInput): BatchPayload!
+  deleteManyPatientContacts(where: PatientContactWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
 }
 
@@ -310,6 +310,7 @@ input OrganisationUpdateManyMutationInput {
 input OrganisationUpdateManyWithoutUsersInput {
   create: [OrganisationCreateWithoutUsersInput!]
   connect: [OrganisationWhereUniqueInput!]
+  set: [OrganisationWhereUniqueInput!]
   disconnect: [OrganisationWhereUniqueInput!]
   delete: [OrganisationWhereUniqueInput!]
   update: [OrganisationUpdateWithWhereUniqueWithoutUsersInput!]
@@ -843,6 +844,7 @@ input PatientContactUpdateManyMutationInput {
 input PatientContactUpdateManyWithoutForPatientInput {
   create: [PatientContactCreateWithoutForPatientInput!]
   connect: [PatientContactWhereUniqueInput!]
+  set: [PatientContactWhereUniqueInput!]
   disconnect: [PatientContactWhereUniqueInput!]
   delete: [PatientContactWhereUniqueInput!]
   update: [PatientContactUpdateWithWhereUniqueWithoutForPatientInput!]
@@ -1097,7 +1099,7 @@ input PatientCreateInput {
   family: UserCreateManyInput
   contacts: PatientContactCreateManyWithoutForPatientInput
   organisation: OrganisationCreateOneWithoutPatientsInput
-  tasks: TaskCreateManyInput
+  tasks: TaskCreateManyWithoutForPatientInput
 }
 
 input PatientCreateManyWithoutOrganisationInput {
@@ -1110,13 +1112,18 @@ input PatientCreateOneWithoutContactsInput {
   connect: PatientWhereUniqueInput
 }
 
+input PatientCreateOneWithoutTasksInput {
+  create: PatientCreateWithoutTasksInput
+  connect: PatientWhereUniqueInput
+}
+
 input PatientCreateWithoutContactsInput {
   name: String!
   dob: DateTime!
   careLevel: CARE_LEVEL
   family: UserCreateManyInput
   organisation: OrganisationCreateOneWithoutPatientsInput
-  tasks: TaskCreateManyInput
+  tasks: TaskCreateManyWithoutForPatientInput
 }
 
 input PatientCreateWithoutOrganisationInput {
@@ -1125,7 +1132,16 @@ input PatientCreateWithoutOrganisationInput {
   careLevel: CARE_LEVEL
   family: UserCreateManyInput
   contacts: PatientContactCreateManyWithoutForPatientInput
-  tasks: TaskCreateManyInput
+  tasks: TaskCreateManyWithoutForPatientInput
+}
+
+input PatientCreateWithoutTasksInput {
+  name: String!
+  dob: DateTime!
+  careLevel: CARE_LEVEL
+  family: UserCreateManyInput
+  contacts: PatientContactCreateManyWithoutForPatientInput
+  organisation: OrganisationCreateOneWithoutPatientsInput
 }
 
 """An edge in a connection."""
@@ -1328,7 +1344,7 @@ input PatientUpdateInput {
   family: UserUpdateManyInput
   contacts: PatientContactUpdateManyWithoutForPatientInput
   organisation: OrganisationUpdateOneWithoutPatientsInput
-  tasks: TaskUpdateManyInput
+  tasks: TaskUpdateManyWithoutForPatientInput
 }
 
 input PatientUpdateManyDataInput {
@@ -1346,6 +1362,7 @@ input PatientUpdateManyMutationInput {
 input PatientUpdateManyWithoutOrganisationInput {
   create: [PatientCreateWithoutOrganisationInput!]
   connect: [PatientWhereUniqueInput!]
+  set: [PatientWhereUniqueInput!]
   disconnect: [PatientWhereUniqueInput!]
   delete: [PatientWhereUniqueInput!]
   update: [PatientUpdateWithWhereUniqueWithoutOrganisationInput!]
@@ -1366,13 +1383,22 @@ input PatientUpdateOneRequiredWithoutContactsInput {
   upsert: PatientUpsertWithoutContactsInput
 }
 
+input PatientUpdateOneWithoutTasksInput {
+  create: PatientCreateWithoutTasksInput
+  connect: PatientWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: PatientUpdateWithoutTasksDataInput
+  upsert: PatientUpsertWithoutTasksInput
+}
+
 input PatientUpdateWithoutContactsDataInput {
   name: String
   dob: DateTime
   careLevel: CARE_LEVEL
   family: UserUpdateManyInput
   organisation: OrganisationUpdateOneWithoutPatientsInput
-  tasks: TaskUpdateManyInput
+  tasks: TaskUpdateManyWithoutForPatientInput
 }
 
 input PatientUpdateWithoutOrganisationDataInput {
@@ -1381,7 +1407,16 @@ input PatientUpdateWithoutOrganisationDataInput {
   careLevel: CARE_LEVEL
   family: UserUpdateManyInput
   contacts: PatientContactUpdateManyWithoutForPatientInput
-  tasks: TaskUpdateManyInput
+  tasks: TaskUpdateManyWithoutForPatientInput
+}
+
+input PatientUpdateWithoutTasksDataInput {
+  name: String
+  dob: DateTime
+  careLevel: CARE_LEVEL
+  family: UserUpdateManyInput
+  contacts: PatientContactUpdateManyWithoutForPatientInput
+  organisation: OrganisationUpdateOneWithoutPatientsInput
 }
 
 input PatientUpdateWithWhereUniqueWithoutOrganisationInput {
@@ -1392,6 +1427,11 @@ input PatientUpdateWithWhereUniqueWithoutOrganisationInput {
 input PatientUpsertWithoutContactsInput {
   update: PatientUpdateWithoutContactsDataInput!
   create: PatientCreateWithoutContactsInput!
+}
+
+input PatientUpsertWithoutTasksInput {
+  update: PatientUpdateWithoutTasksDataInput!
+  create: PatientCreateWithoutTasksInput!
 }
 
 input PatientUpsertWithWhereUniqueWithoutOrganisationInput {
@@ -1540,18 +1580,18 @@ input PatientWhereUniqueInput {
 type Query {
   organisations(where: OrganisationWhereInput, orderBy: OrganisationOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Organisation]!
   patients(where: PatientWhereInput, orderBy: PatientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Patient]!
-  patientContacts(where: PatientContactWhereInput, orderBy: PatientContactOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [PatientContact]!
   tasks(where: TaskWhereInput, orderBy: TaskOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Task]!
+  patientContacts(where: PatientContactWhereInput, orderBy: PatientContactOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [PatientContact]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   organisation(where: OrganisationWhereUniqueInput!): Organisation
   patient(where: PatientWhereUniqueInput!): Patient
-  patientContact(where: PatientContactWhereUniqueInput!): PatientContact
   task(where: TaskWhereUniqueInput!): Task
+  patientContact(where: PatientContactWhereUniqueInput!): PatientContact
   user(where: UserWhereUniqueInput!): User
   organisationsConnection(where: OrganisationWhereInput, orderBy: OrganisationOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): OrganisationConnection!
   patientsConnection(where: PatientWhereInput, orderBy: PatientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PatientConnection!
-  patientContactsConnection(where: PatientContactWhereInput, orderBy: PatientContactOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PatientContactConnection!
   tasksConnection(where: TaskWhereInput, orderBy: TaskOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TaskConnection!
+  patientContactsConnection(where: PatientContactWhereInput, orderBy: PatientContactOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PatientContactConnection!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
 
   """Fetches an object given its ID"""
@@ -1572,8 +1612,8 @@ enum ROLE {
 type Subscription {
   organisation(where: OrganisationSubscriptionWhereInput): OrganisationSubscriptionPayload
   patient(where: PatientSubscriptionWhereInput): PatientSubscriptionPayload
-  patientContact(where: PatientContactSubscriptionWhereInput): PatientContactSubscriptionPayload
   task(where: TaskSubscriptionWhereInput): TaskSubscriptionPayload
+  patientContact(where: PatientContactSubscriptionWhereInput): PatientContactSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
 
@@ -1581,10 +1621,15 @@ type Task implements Node {
   id: ID!
   name: String!
   complete: Boolean!
+  completedAt: DateTime
+  priorityLevel: Int
   note: String
+  alertBefore: DateTime
   checkAt: [DateTime!]!
   taskDays: [DAYS_OF_THE_WEEK!]!
+  repeat: Boolean!
   saveAsTemplate: Boolean
+  forPatient: Patient
 }
 
 """A connection to a list of items."""
@@ -1604,19 +1649,37 @@ input TaskCreatecheckAtInput {
 input TaskCreateInput {
   name: String!
   complete: Boolean!
+  completedAt: DateTime
+  priorityLevel: Int
   note: String
+  alertBefore: DateTime
+  repeat: Boolean!
   saveAsTemplate: Boolean
   checkAt: TaskCreatecheckAtInput
   taskDays: TaskCreatetaskDaysInput
+  forPatient: PatientCreateOneWithoutTasksInput
 }
 
-input TaskCreateManyInput {
-  create: [TaskCreateInput!]
+input TaskCreateManyWithoutForPatientInput {
+  create: [TaskCreateWithoutForPatientInput!]
   connect: [TaskWhereUniqueInput!]
 }
 
 input TaskCreatetaskDaysInput {
   set: [DAYS_OF_THE_WEEK!]
+}
+
+input TaskCreateWithoutForPatientInput {
+  name: String!
+  complete: Boolean!
+  completedAt: DateTime
+  priorityLevel: Int
+  note: String
+  alertBefore: DateTime
+  repeat: Boolean!
+  saveAsTemplate: Boolean
+  checkAt: TaskCreatecheckAtInput
+  taskDays: TaskCreatetaskDaysInput
 }
 
 """An edge in a connection."""
@@ -1635,8 +1698,16 @@ enum TaskOrderByInput {
   name_DESC
   complete_ASC
   complete_DESC
+  completedAt_ASC
+  completedAt_DESC
+  priorityLevel_ASC
+  priorityLevel_DESC
   note_ASC
   note_DESC
+  alertBefore_ASC
+  alertBefore_DESC
+  repeat_ASC
+  repeat_DESC
   saveAsTemplate_ASC
   saveAsTemplate_DESC
   updatedAt_ASC
@@ -1649,9 +1720,13 @@ type TaskPreviousValues {
   id: ID!
   name: String!
   complete: Boolean!
+  completedAt: DateTime
+  priorityLevel: Int
   note: String
+  alertBefore: DateTime
   checkAt: [DateTime!]!
   taskDays: [DAYS_OF_THE_WEEK!]!
+  repeat: Boolean!
   saveAsTemplate: Boolean
 }
 
@@ -1748,6 +1823,50 @@ input TaskScalarWhereInput {
 
   """All values that are not equal to given value."""
   complete_not: Boolean
+  completedAt: DateTime
+
+  """All values that are not equal to given value."""
+  completedAt_not: DateTime
+
+  """All values that are contained in given list."""
+  completedAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  completedAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  completedAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  completedAt_lte: DateTime
+
+  """All values greater than the given value."""
+  completedAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  completedAt_gte: DateTime
+  priorityLevel: Int
+
+  """All values that are not equal to given value."""
+  priorityLevel_not: Int
+
+  """All values that are contained in given list."""
+  priorityLevel_in: [Int!]
+
+  """All values that are not contained in given list."""
+  priorityLevel_not_in: [Int!]
+
+  """All values less than the given value."""
+  priorityLevel_lt: Int
+
+  """All values less than or equal the given value."""
+  priorityLevel_lte: Int
+
+  """All values greater than the given value."""
+  priorityLevel_gt: Int
+
+  """All values greater than or equal the given value."""
+  priorityLevel_gte: Int
   note: String
 
   """All values that are not equal to given value."""
@@ -1788,6 +1907,32 @@ input TaskScalarWhereInput {
 
   """All values not ending with the given string."""
   note_not_ends_with: String
+  alertBefore: DateTime
+
+  """All values that are not equal to given value."""
+  alertBefore_not: DateTime
+
+  """All values that are contained in given list."""
+  alertBefore_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  alertBefore_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  alertBefore_lt: DateTime
+
+  """All values less than or equal the given value."""
+  alertBefore_lte: DateTime
+
+  """All values greater than the given value."""
+  alertBefore_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  alertBefore_gte: DateTime
+  repeat: Boolean
+
+  """All values that are not equal to given value."""
+  repeat_not: Boolean
   saveAsTemplate: Boolean
 
   """All values that are not equal to given value."""
@@ -1837,51 +1982,56 @@ input TaskUpdatecheckAtInput {
   set: [DateTime!]
 }
 
-input TaskUpdateDataInput {
-  name: String
-  complete: Boolean
-  note: String
-  saveAsTemplate: Boolean
-  checkAt: TaskUpdatecheckAtInput
-  taskDays: TaskUpdatetaskDaysInput
-}
-
 input TaskUpdateInput {
   name: String
   complete: Boolean
+  completedAt: DateTime
+  priorityLevel: Int
   note: String
+  alertBefore: DateTime
+  repeat: Boolean
   saveAsTemplate: Boolean
   checkAt: TaskUpdatecheckAtInput
   taskDays: TaskUpdatetaskDaysInput
+  forPatient: PatientUpdateOneWithoutTasksInput
 }
 
 input TaskUpdateManyDataInput {
   name: String
   complete: Boolean
+  completedAt: DateTime
+  priorityLevel: Int
   note: String
+  alertBefore: DateTime
+  repeat: Boolean
   saveAsTemplate: Boolean
   checkAt: TaskUpdatecheckAtInput
   taskDays: TaskUpdatetaskDaysInput
-}
-
-input TaskUpdateManyInput {
-  create: [TaskCreateInput!]
-  connect: [TaskWhereUniqueInput!]
-  disconnect: [TaskWhereUniqueInput!]
-  delete: [TaskWhereUniqueInput!]
-  update: [TaskUpdateWithWhereUniqueNestedInput!]
-  updateMany: [TaskUpdateManyWithWhereNestedInput!]
-  deleteMany: [TaskScalarWhereInput!]
-  upsert: [TaskUpsertWithWhereUniqueNestedInput!]
 }
 
 input TaskUpdateManyMutationInput {
   name: String
   complete: Boolean
+  completedAt: DateTime
+  priorityLevel: Int
   note: String
+  alertBefore: DateTime
+  repeat: Boolean
   saveAsTemplate: Boolean
   checkAt: TaskUpdatecheckAtInput
   taskDays: TaskUpdatetaskDaysInput
+}
+
+input TaskUpdateManyWithoutForPatientInput {
+  create: [TaskCreateWithoutForPatientInput!]
+  connect: [TaskWhereUniqueInput!]
+  set: [TaskWhereUniqueInput!]
+  disconnect: [TaskWhereUniqueInput!]
+  delete: [TaskWhereUniqueInput!]
+  update: [TaskUpdateWithWhereUniqueWithoutForPatientInput!]
+  updateMany: [TaskUpdateManyWithWhereNestedInput!]
+  deleteMany: [TaskScalarWhereInput!]
+  upsert: [TaskUpsertWithWhereUniqueWithoutForPatientInput!]
 }
 
 input TaskUpdateManyWithWhereNestedInput {
@@ -1893,15 +2043,28 @@ input TaskUpdatetaskDaysInput {
   set: [DAYS_OF_THE_WEEK!]
 }
 
-input TaskUpdateWithWhereUniqueNestedInput {
-  where: TaskWhereUniqueInput!
-  data: TaskUpdateDataInput!
+input TaskUpdateWithoutForPatientDataInput {
+  name: String
+  complete: Boolean
+  completedAt: DateTime
+  priorityLevel: Int
+  note: String
+  alertBefore: DateTime
+  repeat: Boolean
+  saveAsTemplate: Boolean
+  checkAt: TaskUpdatecheckAtInput
+  taskDays: TaskUpdatetaskDaysInput
 }
 
-input TaskUpsertWithWhereUniqueNestedInput {
+input TaskUpdateWithWhereUniqueWithoutForPatientInput {
   where: TaskWhereUniqueInput!
-  update: TaskUpdateDataInput!
-  create: TaskCreateInput!
+  data: TaskUpdateWithoutForPatientDataInput!
+}
+
+input TaskUpsertWithWhereUniqueWithoutForPatientInput {
+  where: TaskWhereUniqueInput!
+  update: TaskUpdateWithoutForPatientDataInput!
+  create: TaskCreateWithoutForPatientInput!
 }
 
 input TaskWhereInput {
@@ -1997,6 +2160,50 @@ input TaskWhereInput {
 
   """All values that are not equal to given value."""
   complete_not: Boolean
+  completedAt: DateTime
+
+  """All values that are not equal to given value."""
+  completedAt_not: DateTime
+
+  """All values that are contained in given list."""
+  completedAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  completedAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  completedAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  completedAt_lte: DateTime
+
+  """All values greater than the given value."""
+  completedAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  completedAt_gte: DateTime
+  priorityLevel: Int
+
+  """All values that are not equal to given value."""
+  priorityLevel_not: Int
+
+  """All values that are contained in given list."""
+  priorityLevel_in: [Int!]
+
+  """All values that are not contained in given list."""
+  priorityLevel_not_in: [Int!]
+
+  """All values less than the given value."""
+  priorityLevel_lt: Int
+
+  """All values less than or equal the given value."""
+  priorityLevel_lte: Int
+
+  """All values greater than the given value."""
+  priorityLevel_gt: Int
+
+  """All values greater than or equal the given value."""
+  priorityLevel_gte: Int
   note: String
 
   """All values that are not equal to given value."""
@@ -2037,10 +2244,37 @@ input TaskWhereInput {
 
   """All values not ending with the given string."""
   note_not_ends_with: String
+  alertBefore: DateTime
+
+  """All values that are not equal to given value."""
+  alertBefore_not: DateTime
+
+  """All values that are contained in given list."""
+  alertBefore_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  alertBefore_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  alertBefore_lt: DateTime
+
+  """All values less than or equal the given value."""
+  alertBefore_lte: DateTime
+
+  """All values greater than the given value."""
+  alertBefore_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  alertBefore_gte: DateTime
+  repeat: Boolean
+
+  """All values that are not equal to given value."""
+  repeat_not: Boolean
   saveAsTemplate: Boolean
 
   """All values that are not equal to given value."""
   saveAsTemplate_not: Boolean
+  forPatient: PatientWhereInput
 }
 
 input TaskWhereUniqueInput {
@@ -2371,6 +2605,7 @@ input UserUpdateManyDataInput {
 input UserUpdateManyInput {
   create: [UserCreateInput!]
   connect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
   disconnect: [UserWhereUniqueInput!]
   delete: [UserWhereUniqueInput!]
   update: [UserUpdateWithWhereUniqueNestedInput!]
@@ -2389,6 +2624,7 @@ input UserUpdateManyMutationInput {
 input UserUpdateManyWithoutOrganisationsInput {
   create: [UserCreateWithoutOrganisationsInput!]
   connect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
   disconnect: [UserWhereUniqueInput!]
   delete: [UserWhereUniqueInput!]
   update: [UserUpdateWithWhereUniqueWithoutOrganisationsInput!]

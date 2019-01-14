@@ -2,6 +2,7 @@ import React from "react"
 // Pages
 import HomePage from "../pages/HomePage"
 import WizardPage from "../pages/WizardPage"
+import CreatePatientPage from "../pages/CreatePatientPage"
 // Icons
 import DeveloperModeIcon from "@material-ui/icons/DeveloperMode"
 // Weekend
@@ -33,6 +34,16 @@ const rootRoutes = [
     // restricted: ["WIZARD"],
     restricted: ["WIZARD"],
     component: WizardPage,
+  },
+  {
+    title: "Create Patient",
+    path: "/create/patient",
+    icon: <DeveloperModeIcon color="primary" style={styles.icon} />,
+    panel: true,
+    main: true,
+    // restricted: ["WIZARD"],
+    restricted: ["WIZARD", "MANAGER", "NURSE"],
+    component: CreatePatientPage,
   },
 ]
 
