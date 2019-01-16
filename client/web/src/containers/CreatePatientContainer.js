@@ -1,4 +1,5 @@
 import React, { Fragment, Component } from "react"
+import moment from "moment"
 /*global event*/
 /*eslint no-restricted-globals: ["error", "event"]*/
 import PropTypes from "prop-types"
@@ -7,7 +8,10 @@ import { withRouter } from "react-router"
 import { withStyles } from "@material-ui/core/styles"
 // GraphQL
 import { graphql, compose, withApollo, Query } from "react-apollo"
+// Queries
 import { ALL_USERS } from "../queries/AllUsers"
+// Mutations
+import { CREATE_PATIENT } from "../mutations/createPatient"
 // components
 import RoutePanel from "../components/RoutePanel/index"
 // Config
@@ -60,10 +64,10 @@ class CreatePatientContainer extends Component {
   }
 
   renderFieldSet = () => {
-    const {
-      users: { allUsers, loading },
-    } = this.props
-    console.log("users ......=> ", allUsers)
+    // const {
+    //   users: { allUsers, loading },
+    // } = this.props
+    // console.log("users ......=> ", allUsers)
     const {
       createPatient: {
         name,
@@ -74,6 +78,7 @@ class CreatePatientContainer extends Component {
         organisation,
         tasks,
       },
+      users: { allUsers, loading },
     } = this.props
     return (
       <div>
@@ -99,20 +104,20 @@ class CreatePatientContainer extends Component {
           handleChange={v => this.handleInputChange("careLevel", v)}
         />
         <MultiSelectChip
-          values={family}
+          values={family ? family : []}
           label={"Family"}
           options={
-            loading ? [] : allUsers.map(u => ({ name: u.name, value: u.id }))
+            allUsers ? allUsers.map(u => ({ name: u.name, value: u.id })) : []
           }
           handleChange={v => this.handleInputChange("family", v)}
         />
-        <TextField
+        {/* <TextField
           id={"contacts"}
           label={"Contacts"}
           multiline={true}
           value={contacts}
           handleChange={v => this.handleInputChange("contacts", v)}
-        />
+        /> */}
         <TextField
           id={"organisation"}
           label={"Organisation"}
@@ -120,20 +125,70 @@ class CreatePatientContainer extends Component {
           value={organisation}
           handleChange={v => this.handleInputChange("organisation", v)}
         />
-        <TextField
-          id={"tasks"}
-          label={"Tasks"}
-          multiline={true}
-          value={tasks}
-          handleChange={v => this.handleInputChange("tasks", v)}
-        />
-        <button onClick={() => alert("Todo: Crreate ")}>Create Patient</button>
+
+        <button onClick={() => this._createPatient()}>Create Patient</button>
       </div>
     )
   }
 
   handleInputChange = (id, v) => {
     this.props.updateInput(id, v)
+  }
+
+  _createPatient = async () => {
+    const newPatient = await this.props.createPatientMutation({
+      variables: {
+        // userId: this.props.user.id,
+        // lastDayOfWork: moment(this.state.lastDayOfWork).format(),
+        // firstDayOfLeave: moment(this.state.firstDayOfLeave).format(),
+        // lastDayOfLeave: moment(this.state.lastDayOfLeave).format(),
+        // firstDayOfWork: moment(this.state.firstDayOfWork).format(),
+        // daysOfLeave: parseInt(this.state.daysOfLeave),
+        // publicHolidays: parseInt(this.state.publicHolidays),
+        // type: this.state.type,
+        // name: this.props.createPatient.name,
+        // dob: moment(this.props.createPatient.dob).format(),
+        // careLevel: this.props.createPatient.careLevel,
+        data: {
+          name: this.props.createPatient.name,
+          dob: moment(this.props.createPatient.dob).format(),
+          careLevel: this.props.createPatient.careLevel,
+          organisation: {
+            connect: {
+              id: this.props.user.currOrgId,
+            },
+          },
+          family: {
+            connect: this.props.createPatient.family.map(userId => ({
+              id: userId,
+            })),
+            // connect: [
+            //   // {
+            //   //   id: "cjqtbjowuao1d0a71pxld5e34",
+            //   // },
+            //   // {
+            //   //   id: "cjqtfjv0t9u780917rrno9p0y",
+            //   // },
+            // ],
+          },
+        },
+        // {
+        //   "data": {
+        //     "name": "Patient 1",
+        //     "dob": "2018-09-28T14:33:47.264Z",
+        //     "careLevel": "REST_HOME",
+        //     "organisation": {
+        //       "connect": {
+        //         "id": "cjqvqkzmkergo0917lfi1jd2z"
+        //       }
+        //     }
+        //   }
+        // }
+        // family: // ToDo: use connect
+      },
+      // 25 Mar 2015
+    })
+    console.log("newPatient => ", newPatient)
   }
 }
 
@@ -143,7 +198,7 @@ CreatePatientContainer.propTypes = {
 
 const reduxWrapper = connect(
   state => ({
-    //user: state.user,
+    user: state.user,
     createPatient: state.createPatient,
   }),
   dispatch => ({
@@ -157,5 +212,6 @@ export default compose(
   reduxWrapper,
   withApollo,
   // graphql(ALL_USERS)
-  graphql(ALL_USERS, { name: "users" })
+  graphql(ALL_USERS, { name: "users" }),
+  graphql(CREATE_PATIENT, { name: "createPatientMutation" })
 )(CreatePatientContainer)

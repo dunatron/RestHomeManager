@@ -2,6 +2,8 @@ export const AUTH_TOKEN = "auth-token"
 export const ORGANISATION_ID = "organisation-id"
 export const PERSISTENT_STORE_KEYS_ARR = ["user"]
 export const QUESTIONS_PER_PAGE = 25
+export const ROOMS_PER_FETCH = 25
+export const PATIENTS_PER_FETCH = 2
 
 // ROLES
 export const ROLE_WIZARD = { name: "Wizard", value: "WIZARD" }
@@ -15,7 +17,7 @@ export const ROLE_CAREGIVER = { name: "Caregiver", value: "CAREGIVER" }
 export const ROLE_FAMILY = { name: "Family", value: "FAMILY" }
 
 export const USER_ROLES = [
-  ROLE_WIZARD,
+  // ROLE_WIZARD, This can never be set any
   ROLE_MANAGER,
   ROLE_NURSE,
   ROLE_CAREGIVER,

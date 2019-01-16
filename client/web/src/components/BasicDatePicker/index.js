@@ -31,9 +31,9 @@ class BasicDatePicker extends PureComponent {
             keyboardIcon={<DateRangeIcon className={classes.navArrow} />}
             leftArrowIcon={<LeftArrow />}
             rightArrowIcon={<RightArrow />}
-            pickerRef={node => {
-              this.picker = node
-            }}
+            // pickerRef={node => {
+            //   this.picker = node
+            // }}
             label={label}
             format="D MMM YYYY"
             value={selectedDate}

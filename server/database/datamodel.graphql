@@ -3,6 +3,7 @@ type Organisation {
   name: String
   users: [User!]!
   patients: [Patient!]! @relation(name: "OrgPatients", onDelete: SET_NULL)
+  rooms: [Room!]! @relation(name: "OrgRooms", onDelete: SET_NULL)
 }
 
 type User {
@@ -24,6 +25,15 @@ type Patient {
     @relation(name: "PatientContacts", onDelete: CASCADE)
   organisation: Organisation @relation(name: "OrgPatients")
   tasks: [Task!]! @relation(name: "PatientTasks")
+  allocatedRoom: Room @relation(name: "RoomPatients")
+}
+
+type Room {
+  id: ID! @unique
+  name: String!
+  size: Int
+  patients: [Patient!]! @relation(name: "RoomPatients", onDelete: SET_NULL)
+  organisation: Organisation @relation(name: "OrgRooms", onDelete: SET_NULL)
 }
 
 type Task {

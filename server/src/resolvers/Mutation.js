@@ -93,10 +93,44 @@ function removeOrgFromUser(parent, args, context, info) {
   )
 }
 
+async function createPatient(parent, args, context, info) {
+  const patient = await context.db.mutation.createPatient(
+    {
+      data: { ...args.data },
+    },
+    info
+  )
+  return patient
+}
+
+async function createRoom(parent, args, context, info) {
+  const room = await context.db.mutation.createRoom(
+    {
+      data: { ...args.data },
+    },
+    info
+  )
+  return room
+}
+
+async function updatePatient(parent, args, context, info) {
+  const patient = await context.db.mutation.updatePatient(
+    {
+      data: { ...args.data },
+      where: { ...args.where },
+    },
+    info
+  )
+  return patient
+}
+
 module.exports = {
   signup,
   login,
   changeUserRole,
   addOrgToUser,
   removeOrgFromUser,
+  createPatient,
+  createRoom,
+  updatePatient,
 }

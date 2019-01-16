@@ -3,6 +3,10 @@ import React from "react"
 import HomePage from "../pages/HomePage"
 import WizardPage from "../pages/WizardPage"
 import CreatePatientPage from "../pages/CreatePatientPage"
+import UsersPage from "../pages/UsersPage"
+import PatientsPage from "../pages/PatientsPage"
+import CreateRoomPage from "../pages/CreateRoomPage"
+import AssignRoomingPage from "../pages/AssignRoomingPage"
 // Icons
 import DeveloperModeIcon from "@material-ui/icons/DeveloperMode"
 // Weekend
@@ -44,6 +48,46 @@ const rootRoutes = [
     // restricted: ["WIZARD"],
     restricted: ["WIZARD", "MANAGER", "NURSE"],
     component: CreatePatientPage,
+  },
+  {
+    title: "Manage Users",
+    path: "/org/users",
+    icon: <DeveloperModeIcon color="primary" style={styles.icon} />,
+    panel: true,
+    main: true,
+    // restricted: ["WIZARD"],
+    restricted: ["WIZARD", "MANAGER"],
+    component: UsersPage,
+  },
+  {
+    title: "Manage Patients",
+    path: "/org/patients",
+    icon: <DeveloperModeIcon color="primary" style={styles.icon} />,
+    panel: true,
+    main: true,
+    // restricted: ["WIZARD"],
+    restricted: ["WIZARD", "MANAGER", "NURSE"],
+    component: PatientsPage,
+  },
+  {
+    title: "Create Room",
+    path: "/create/room",
+    icon: <DeveloperModeIcon color="primary" style={styles.icon} />,
+    panel: true,
+    main: true,
+    // restricted: ["WIZARD"],
+    restricted: ["WIZARD", "MANAGER"],
+    component: CreateRoomPage,
+  },
+  {
+    title: "Assign Rooming",
+    path: "/assign-patient-rooms",
+    icon: <DeveloperModeIcon color="primary" style={styles.icon} />,
+    panel: true,
+    main: true,
+    // restricted: ["WIZARD"],
+    restricted: ["WIZARD", "MANAGER"],
+    component: AssignRoomingPage,
   },
 ]
 

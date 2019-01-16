@@ -6,6 +6,7 @@ import SelectOption from "../Inputs/SelectOption"
 const styles = theme => ({
   root: {},
   content: {
+    display: "flex",
     overflow: "hidden",
     flexBasis: "100%",
     transition: "all 0.5s ease",

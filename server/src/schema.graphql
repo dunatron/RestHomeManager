@@ -1,4 +1,4 @@
-# import Organisation, User, ROLE from "./generated/prisma.graphql"
+# import Organisation, User, ROLE, Patient, PatientCreateInput, PatientUpdateInput, PatientWhereInput, PatientWhereUniqueInput,  PatientOrderByInput, Room, RoomCreateInput, RoomWhereInput, RoomOrderByInput from "./generated/prisma.graphql"
 
 type Query {
   info: String!
@@ -6,6 +6,26 @@ type Query {
   organisation: Organisation
   allUsers: [User!]!
   getUser: User!
+  allPatients(where: PatientWhereInput): [Patient!]!
+  patient(where: PatientWhereUniqueInput): Patient!
+  patientFeed(
+    where: PatientWhereInput
+    orderBy: PatientOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): PatientFeed!
+  roomFeed(
+    where: RoomWhereInput
+    orderBy: RoomOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): RoomFeed
 }
 
 type Mutation {
@@ -19,6 +39,12 @@ type Mutation {
   changeUserRole(id: ID!, role: ROLE!): User!
   addOrgToUser(orgId: ID!, userId: ID!): User!
   removeOrgFromUser(orgId: ID!, userId: ID!): User!
+  createPatient(data: PatientCreateInput!): Patient
+  updatePatient(
+    data: PatientUpdateInput
+    where: PatientWhereUniqueInput
+  ): Patient!
+  createRoom(data: RoomCreateInput): Room
 }
 
 type AuthPayload {
@@ -32,4 +58,14 @@ type User {
   email: String!
   role: ROLE!
   organisations: [Organisation!]!
+}
+
+type PatientFeed {
+  patients: [Patient!]!
+  count: Int!
+}
+
+type RoomFeed {
+  rooms: [Room!]!
+  count: Int!
 }

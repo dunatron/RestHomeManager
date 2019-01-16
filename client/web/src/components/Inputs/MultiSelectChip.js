@@ -46,6 +46,7 @@ const MultiSelectChip = ({
       <Select
         multiple={true}
         value={values}
+        // value={[]}
         onChange={e => handleChange(e.target.value)}
         inputProps={{
           name: selectID,

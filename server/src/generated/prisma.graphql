@@ -1,5 +1,5 @@
 # source: https://us1.prisma.sh/heath-dunlop-37e897/RestHomeManager/dev
-# timestamp: Sat Jan 12 2019 23:44:26 GMT+1300 (New Zealand Daylight Time)
+# timestamp: Wed Jan 16 2019 04:00:04 GMT+1300 (New Zealand Daylight Time)
 
 type AggregateOrganisation {
   count: Int!
@@ -10,6 +10,10 @@ type AggregatePatient {
 }
 
 type AggregatePatientContact {
+  count: Int!
+}
+
+type AggregateRoom {
   count: Int!
 }
 
@@ -53,31 +57,37 @@ scalar Long
 type Mutation {
   createOrganisation(data: OrganisationCreateInput!): Organisation!
   createPatient(data: PatientCreateInput!): Patient!
+  createRoom(data: RoomCreateInput!): Room!
   createTask(data: TaskCreateInput!): Task!
   createPatientContact(data: PatientContactCreateInput!): PatientContact!
   createUser(data: UserCreateInput!): User!
   updateOrganisation(data: OrganisationUpdateInput!, where: OrganisationWhereUniqueInput!): Organisation
   updatePatient(data: PatientUpdateInput!, where: PatientWhereUniqueInput!): Patient
+  updateRoom(data: RoomUpdateInput!, where: RoomWhereUniqueInput!): Room
   updateTask(data: TaskUpdateInput!, where: TaskWhereUniqueInput!): Task
   updatePatientContact(data: PatientContactUpdateInput!, where: PatientContactWhereUniqueInput!): PatientContact
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   deleteOrganisation(where: OrganisationWhereUniqueInput!): Organisation
   deletePatient(where: PatientWhereUniqueInput!): Patient
+  deleteRoom(where: RoomWhereUniqueInput!): Room
   deleteTask(where: TaskWhereUniqueInput!): Task
   deletePatientContact(where: PatientContactWhereUniqueInput!): PatientContact
   deleteUser(where: UserWhereUniqueInput!): User
   upsertOrganisation(where: OrganisationWhereUniqueInput!, create: OrganisationCreateInput!, update: OrganisationUpdateInput!): Organisation!
   upsertPatient(where: PatientWhereUniqueInput!, create: PatientCreateInput!, update: PatientUpdateInput!): Patient!
+  upsertRoom(where: RoomWhereUniqueInput!, create: RoomCreateInput!, update: RoomUpdateInput!): Room!
   upsertTask(where: TaskWhereUniqueInput!, create: TaskCreateInput!, update: TaskUpdateInput!): Task!
   upsertPatientContact(where: PatientContactWhereUniqueInput!, create: PatientContactCreateInput!, update: PatientContactUpdateInput!): PatientContact!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   updateManyOrganisations(data: OrganisationUpdateManyMutationInput!, where: OrganisationWhereInput): BatchPayload!
   updateManyPatients(data: PatientUpdateManyMutationInput!, where: PatientWhereInput): BatchPayload!
+  updateManyRooms(data: RoomUpdateManyMutationInput!, where: RoomWhereInput): BatchPayload!
   updateManyTasks(data: TaskUpdateManyMutationInput!, where: TaskWhereInput): BatchPayload!
   updateManyPatientContacts(data: PatientContactUpdateManyMutationInput!, where: PatientContactWhereInput): BatchPayload!
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
   deleteManyOrganisations(where: OrganisationWhereInput): BatchPayload!
   deleteManyPatients(where: PatientWhereInput): BatchPayload!
+  deleteManyRooms(where: RoomWhereInput): BatchPayload!
   deleteManyTasks(where: TaskWhereInput): BatchPayload!
   deleteManyPatientContacts(where: PatientContactWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
@@ -100,6 +110,7 @@ type Organisation implements Node {
   name: String
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
   patients(where: PatientWhereInput, orderBy: PatientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Patient!]
+  rooms(where: RoomWhereInput, orderBy: RoomOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Room!]
 }
 
 """A connection to a list of items."""
@@ -116,6 +127,7 @@ input OrganisationCreateInput {
   name: String
   users: UserCreateManyWithoutOrganisationsInput
   patients: PatientCreateManyWithoutOrganisationInput
+  rooms: RoomCreateManyWithoutOrganisationInput
 }
 
 input OrganisationCreateManyWithoutUsersInput {
@@ -128,14 +140,27 @@ input OrganisationCreateOneWithoutPatientsInput {
   connect: OrganisationWhereUniqueInput
 }
 
+input OrganisationCreateOneWithoutRoomsInput {
+  create: OrganisationCreateWithoutRoomsInput
+  connect: OrganisationWhereUniqueInput
+}
+
 input OrganisationCreateWithoutPatientsInput {
   name: String
   users: UserCreateManyWithoutOrganisationsInput
+  rooms: RoomCreateManyWithoutOrganisationInput
+}
+
+input OrganisationCreateWithoutRoomsInput {
+  name: String
+  users: UserCreateManyWithoutOrganisationsInput
+  patients: PatientCreateManyWithoutOrganisationInput
 }
 
 input OrganisationCreateWithoutUsersInput {
   name: String
   patients: PatientCreateManyWithoutOrganisationInput
+  rooms: RoomCreateManyWithoutOrganisationInput
 }
 
 """An edge in a connection."""
@@ -297,6 +322,7 @@ input OrganisationUpdateInput {
   name: String
   users: UserUpdateManyWithoutOrganisationsInput
   patients: PatientUpdateManyWithoutOrganisationInput
+  rooms: RoomUpdateManyWithoutOrganisationInput
 }
 
 input OrganisationUpdateManyDataInput {
@@ -333,14 +359,31 @@ input OrganisationUpdateOneWithoutPatientsInput {
   upsert: OrganisationUpsertWithoutPatientsInput
 }
 
+input OrganisationUpdateOneWithoutRoomsInput {
+  create: OrganisationCreateWithoutRoomsInput
+  connect: OrganisationWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: OrganisationUpdateWithoutRoomsDataInput
+  upsert: OrganisationUpsertWithoutRoomsInput
+}
+
 input OrganisationUpdateWithoutPatientsDataInput {
   name: String
   users: UserUpdateManyWithoutOrganisationsInput
+  rooms: RoomUpdateManyWithoutOrganisationInput
+}
+
+input OrganisationUpdateWithoutRoomsDataInput {
+  name: String
+  users: UserUpdateManyWithoutOrganisationsInput
+  patients: PatientUpdateManyWithoutOrganisationInput
 }
 
 input OrganisationUpdateWithoutUsersDataInput {
   name: String
   patients: PatientUpdateManyWithoutOrganisationInput
+  rooms: RoomUpdateManyWithoutOrganisationInput
 }
 
 input OrganisationUpdateWithWhereUniqueWithoutUsersInput {
@@ -351,6 +394,11 @@ input OrganisationUpdateWithWhereUniqueWithoutUsersInput {
 input OrganisationUpsertWithoutPatientsInput {
   update: OrganisationUpdateWithoutPatientsDataInput!
   create: OrganisationCreateWithoutPatientsInput!
+}
+
+input OrganisationUpsertWithoutRoomsInput {
+  update: OrganisationUpdateWithoutRoomsDataInput!
+  create: OrganisationCreateWithoutRoomsInput!
 }
 
 input OrganisationUpsertWithWhereUniqueWithoutUsersInput {
@@ -454,6 +502,9 @@ input OrganisationWhereInput {
   patients_every: PatientWhereInput
   patients_some: PatientWhereInput
   patients_none: PatientWhereInput
+  rooms_every: RoomWhereInput
+  rooms_some: RoomWhereInput
+  rooms_none: RoomWhereInput
 }
 
 input OrganisationWhereUniqueInput {
@@ -484,6 +535,7 @@ type Patient implements Node {
   contacts(where: PatientContactWhereInput, orderBy: PatientContactOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [PatientContact!]
   organisation: Organisation
   tasks(where: TaskWhereInput, orderBy: TaskOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Task!]
+  allocatedRoom: Room
 }
 
 """A connection to a list of items."""
@@ -1100,6 +1152,12 @@ input PatientCreateInput {
   contacts: PatientContactCreateManyWithoutForPatientInput
   organisation: OrganisationCreateOneWithoutPatientsInput
   tasks: TaskCreateManyWithoutForPatientInput
+  allocatedRoom: RoomCreateOneWithoutPatientsInput
+}
+
+input PatientCreateManyWithoutAllocatedRoomInput {
+  create: [PatientCreateWithoutAllocatedRoomInput!]
+  connect: [PatientWhereUniqueInput!]
 }
 
 input PatientCreateManyWithoutOrganisationInput {
@@ -1117,6 +1175,16 @@ input PatientCreateOneWithoutTasksInput {
   connect: PatientWhereUniqueInput
 }
 
+input PatientCreateWithoutAllocatedRoomInput {
+  name: String!
+  dob: DateTime!
+  careLevel: CARE_LEVEL
+  family: UserCreateManyInput
+  contacts: PatientContactCreateManyWithoutForPatientInput
+  organisation: OrganisationCreateOneWithoutPatientsInput
+  tasks: TaskCreateManyWithoutForPatientInput
+}
+
 input PatientCreateWithoutContactsInput {
   name: String!
   dob: DateTime!
@@ -1124,6 +1192,7 @@ input PatientCreateWithoutContactsInput {
   family: UserCreateManyInput
   organisation: OrganisationCreateOneWithoutPatientsInput
   tasks: TaskCreateManyWithoutForPatientInput
+  allocatedRoom: RoomCreateOneWithoutPatientsInput
 }
 
 input PatientCreateWithoutOrganisationInput {
@@ -1133,6 +1202,7 @@ input PatientCreateWithoutOrganisationInput {
   family: UserCreateManyInput
   contacts: PatientContactCreateManyWithoutForPatientInput
   tasks: TaskCreateManyWithoutForPatientInput
+  allocatedRoom: RoomCreateOneWithoutPatientsInput
 }
 
 input PatientCreateWithoutTasksInput {
@@ -1142,6 +1212,7 @@ input PatientCreateWithoutTasksInput {
   family: UserCreateManyInput
   contacts: PatientContactCreateManyWithoutForPatientInput
   organisation: OrganisationCreateOneWithoutPatientsInput
+  allocatedRoom: RoomCreateOneWithoutPatientsInput
 }
 
 """An edge in a connection."""
@@ -1345,6 +1416,7 @@ input PatientUpdateInput {
   contacts: PatientContactUpdateManyWithoutForPatientInput
   organisation: OrganisationUpdateOneWithoutPatientsInput
   tasks: TaskUpdateManyWithoutForPatientInput
+  allocatedRoom: RoomUpdateOneWithoutPatientsInput
 }
 
 input PatientUpdateManyDataInput {
@@ -1357,6 +1429,18 @@ input PatientUpdateManyMutationInput {
   name: String
   dob: DateTime
   careLevel: CARE_LEVEL
+}
+
+input PatientUpdateManyWithoutAllocatedRoomInput {
+  create: [PatientCreateWithoutAllocatedRoomInput!]
+  connect: [PatientWhereUniqueInput!]
+  set: [PatientWhereUniqueInput!]
+  disconnect: [PatientWhereUniqueInput!]
+  delete: [PatientWhereUniqueInput!]
+  update: [PatientUpdateWithWhereUniqueWithoutAllocatedRoomInput!]
+  updateMany: [PatientUpdateManyWithWhereNestedInput!]
+  deleteMany: [PatientScalarWhereInput!]
+  upsert: [PatientUpsertWithWhereUniqueWithoutAllocatedRoomInput!]
 }
 
 input PatientUpdateManyWithoutOrganisationInput {
@@ -1392,6 +1476,16 @@ input PatientUpdateOneWithoutTasksInput {
   upsert: PatientUpsertWithoutTasksInput
 }
 
+input PatientUpdateWithoutAllocatedRoomDataInput {
+  name: String
+  dob: DateTime
+  careLevel: CARE_LEVEL
+  family: UserUpdateManyInput
+  contacts: PatientContactUpdateManyWithoutForPatientInput
+  organisation: OrganisationUpdateOneWithoutPatientsInput
+  tasks: TaskUpdateManyWithoutForPatientInput
+}
+
 input PatientUpdateWithoutContactsDataInput {
   name: String
   dob: DateTime
@@ -1399,6 +1493,7 @@ input PatientUpdateWithoutContactsDataInput {
   family: UserUpdateManyInput
   organisation: OrganisationUpdateOneWithoutPatientsInput
   tasks: TaskUpdateManyWithoutForPatientInput
+  allocatedRoom: RoomUpdateOneWithoutPatientsInput
 }
 
 input PatientUpdateWithoutOrganisationDataInput {
@@ -1408,6 +1503,7 @@ input PatientUpdateWithoutOrganisationDataInput {
   family: UserUpdateManyInput
   contacts: PatientContactUpdateManyWithoutForPatientInput
   tasks: TaskUpdateManyWithoutForPatientInput
+  allocatedRoom: RoomUpdateOneWithoutPatientsInput
 }
 
 input PatientUpdateWithoutTasksDataInput {
@@ -1417,6 +1513,12 @@ input PatientUpdateWithoutTasksDataInput {
   family: UserUpdateManyInput
   contacts: PatientContactUpdateManyWithoutForPatientInput
   organisation: OrganisationUpdateOneWithoutPatientsInput
+  allocatedRoom: RoomUpdateOneWithoutPatientsInput
+}
+
+input PatientUpdateWithWhereUniqueWithoutAllocatedRoomInput {
+  where: PatientWhereUniqueInput!
+  data: PatientUpdateWithoutAllocatedRoomDataInput!
 }
 
 input PatientUpdateWithWhereUniqueWithoutOrganisationInput {
@@ -1432,6 +1534,12 @@ input PatientUpsertWithoutContactsInput {
 input PatientUpsertWithoutTasksInput {
   update: PatientUpdateWithoutTasksDataInput!
   create: PatientCreateWithoutTasksInput!
+}
+
+input PatientUpsertWithWhereUniqueWithoutAllocatedRoomInput {
+  where: PatientWhereUniqueInput!
+  update: PatientUpdateWithoutAllocatedRoomDataInput!
+  create: PatientCreateWithoutAllocatedRoomInput!
 }
 
 input PatientUpsertWithWhereUniqueWithoutOrganisationInput {
@@ -1571,6 +1679,7 @@ input PatientWhereInput {
   tasks_every: TaskWhereInput
   tasks_some: TaskWhereInput
   tasks_none: TaskWhereInput
+  allocatedRoom: RoomWhereInput
 }
 
 input PatientWhereUniqueInput {
@@ -1580,16 +1689,19 @@ input PatientWhereUniqueInput {
 type Query {
   organisations(where: OrganisationWhereInput, orderBy: OrganisationOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Organisation]!
   patients(where: PatientWhereInput, orderBy: PatientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Patient]!
+  rooms(where: RoomWhereInput, orderBy: RoomOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Room]!
   tasks(where: TaskWhereInput, orderBy: TaskOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Task]!
   patientContacts(where: PatientContactWhereInput, orderBy: PatientContactOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [PatientContact]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   organisation(where: OrganisationWhereUniqueInput!): Organisation
   patient(where: PatientWhereUniqueInput!): Patient
+  room(where: RoomWhereUniqueInput!): Room
   task(where: TaskWhereUniqueInput!): Task
   patientContact(where: PatientContactWhereUniqueInput!): PatientContact
   user(where: UserWhereUniqueInput!): User
   organisationsConnection(where: OrganisationWhereInput, orderBy: OrganisationOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): OrganisationConnection!
   patientsConnection(where: PatientWhereInput, orderBy: PatientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PatientConnection!
+  roomsConnection(where: RoomWhereInput, orderBy: RoomOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RoomConnection!
   tasksConnection(where: TaskWhereInput, orderBy: TaskOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TaskConnection!
   patientContactsConnection(where: PatientContactWhereInput, orderBy: PatientContactOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PatientContactConnection!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
@@ -1609,9 +1721,429 @@ enum ROLE {
   WIZARD
 }
 
+type Room implements Node {
+  id: ID!
+  name: String!
+  size: Int
+  patients(where: PatientWhereInput, orderBy: PatientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Patient!]
+  organisation: Organisation
+}
+
+"""A connection to a list of items."""
+type RoomConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [RoomEdge]!
+  aggregate: AggregateRoom!
+}
+
+input RoomCreateInput {
+  name: String!
+  size: Int
+  patients: PatientCreateManyWithoutAllocatedRoomInput
+  organisation: OrganisationCreateOneWithoutRoomsInput
+}
+
+input RoomCreateManyWithoutOrganisationInput {
+  create: [RoomCreateWithoutOrganisationInput!]
+  connect: [RoomWhereUniqueInput!]
+}
+
+input RoomCreateOneWithoutPatientsInput {
+  create: RoomCreateWithoutPatientsInput
+  connect: RoomWhereUniqueInput
+}
+
+input RoomCreateWithoutOrganisationInput {
+  name: String!
+  size: Int
+  patients: PatientCreateManyWithoutAllocatedRoomInput
+}
+
+input RoomCreateWithoutPatientsInput {
+  name: String!
+  size: Int
+  organisation: OrganisationCreateOneWithoutRoomsInput
+}
+
+"""An edge in a connection."""
+type RoomEdge {
+  """The item at the end of the edge."""
+  node: Room!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum RoomOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  size_ASC
+  size_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type RoomPreviousValues {
+  id: ID!
+  name: String!
+  size: Int
+}
+
+input RoomScalarWhereInput {
+  """Logical AND on all given filters."""
+  AND: [RoomScalarWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [RoomScalarWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [RoomScalarWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+  size: Int
+
+  """All values that are not equal to given value."""
+  size_not: Int
+
+  """All values that are contained in given list."""
+  size_in: [Int!]
+
+  """All values that are not contained in given list."""
+  size_not_in: [Int!]
+
+  """All values less than the given value."""
+  size_lt: Int
+
+  """All values less than or equal the given value."""
+  size_lte: Int
+
+  """All values greater than the given value."""
+  size_gt: Int
+
+  """All values greater than or equal the given value."""
+  size_gte: Int
+}
+
+type RoomSubscriptionPayload {
+  mutation: MutationType!
+  node: Room
+  updatedFields: [String!]
+  previousValues: RoomPreviousValues
+}
+
+input RoomSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [RoomSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [RoomSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [RoomSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: RoomWhereInput
+}
+
+input RoomUpdateInput {
+  name: String
+  size: Int
+  patients: PatientUpdateManyWithoutAllocatedRoomInput
+  organisation: OrganisationUpdateOneWithoutRoomsInput
+}
+
+input RoomUpdateManyDataInput {
+  name: String
+  size: Int
+}
+
+input RoomUpdateManyMutationInput {
+  name: String
+  size: Int
+}
+
+input RoomUpdateManyWithoutOrganisationInput {
+  create: [RoomCreateWithoutOrganisationInput!]
+  connect: [RoomWhereUniqueInput!]
+  set: [RoomWhereUniqueInput!]
+  disconnect: [RoomWhereUniqueInput!]
+  delete: [RoomWhereUniqueInput!]
+  update: [RoomUpdateWithWhereUniqueWithoutOrganisationInput!]
+  updateMany: [RoomUpdateManyWithWhereNestedInput!]
+  deleteMany: [RoomScalarWhereInput!]
+  upsert: [RoomUpsertWithWhereUniqueWithoutOrganisationInput!]
+}
+
+input RoomUpdateManyWithWhereNestedInput {
+  where: RoomScalarWhereInput!
+  data: RoomUpdateManyDataInput!
+}
+
+input RoomUpdateOneWithoutPatientsInput {
+  create: RoomCreateWithoutPatientsInput
+  connect: RoomWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: RoomUpdateWithoutPatientsDataInput
+  upsert: RoomUpsertWithoutPatientsInput
+}
+
+input RoomUpdateWithoutOrganisationDataInput {
+  name: String
+  size: Int
+  patients: PatientUpdateManyWithoutAllocatedRoomInput
+}
+
+input RoomUpdateWithoutPatientsDataInput {
+  name: String
+  size: Int
+  organisation: OrganisationUpdateOneWithoutRoomsInput
+}
+
+input RoomUpdateWithWhereUniqueWithoutOrganisationInput {
+  where: RoomWhereUniqueInput!
+  data: RoomUpdateWithoutOrganisationDataInput!
+}
+
+input RoomUpsertWithoutPatientsInput {
+  update: RoomUpdateWithoutPatientsDataInput!
+  create: RoomCreateWithoutPatientsInput!
+}
+
+input RoomUpsertWithWhereUniqueWithoutOrganisationInput {
+  where: RoomWhereUniqueInput!
+  update: RoomUpdateWithoutOrganisationDataInput!
+  create: RoomCreateWithoutOrganisationInput!
+}
+
+input RoomWhereInput {
+  """Logical AND on all given filters."""
+  AND: [RoomWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [RoomWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [RoomWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+  size: Int
+
+  """All values that are not equal to given value."""
+  size_not: Int
+
+  """All values that are contained in given list."""
+  size_in: [Int!]
+
+  """All values that are not contained in given list."""
+  size_not_in: [Int!]
+
+  """All values less than the given value."""
+  size_lt: Int
+
+  """All values less than or equal the given value."""
+  size_lte: Int
+
+  """All values greater than the given value."""
+  size_gt: Int
+
+  """All values greater than or equal the given value."""
+  size_gte: Int
+  patients_every: PatientWhereInput
+  patients_some: PatientWhereInput
+  patients_none: PatientWhereInput
+  organisation: OrganisationWhereInput
+}
+
+input RoomWhereUniqueInput {
+  id: ID
+}
+
 type Subscription {
   organisation(where: OrganisationSubscriptionWhereInput): OrganisationSubscriptionPayload
   patient(where: PatientSubscriptionWhereInput): PatientSubscriptionPayload
+  room(where: RoomSubscriptionWhereInput): RoomSubscriptionPayload
   task(where: TaskSubscriptionWhereInput): TaskSubscriptionPayload
   patientContact(where: PatientContactSubscriptionWhereInput): PatientContactSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload

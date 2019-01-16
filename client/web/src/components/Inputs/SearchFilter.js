@@ -6,17 +6,23 @@ import TextField from "@material-ui/core/TextField"
 const styles = theme => ({
   searchField: {
     display: "block",
-    margin: theme.spacing.unit,
+    // margin: theme.spacing.unit,
   },
 })
 
-const SearchFilter = ({ classes, value, handleChange, fullWidth }) => {
+const SearchFilter = ({
+  classes,
+  value,
+  handleChange,
+  fullWidth,
+  label = "Search Filter",
+}) => {
   return (
     <TextField
       id="SearchFilter"
-      label="Search Filter"
+      label={label}
       className={classes.searchField}
-      fullWidth
+      fullWidth={fullWidth}
       value={value}
       onChange={e => handleChange(e.target.value)}
       margin="normal"

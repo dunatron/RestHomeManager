@@ -18,6 +18,13 @@ const styles = theme => ({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
+    padding: "0",
+    boxSizing: "border-box",
+  },
+  [theme.breakpoints.up("sm")]: {
+    root: {
+      padding: "3%",
+    },
   },
   content: {
     // height: 100,

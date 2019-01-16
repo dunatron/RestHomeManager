@@ -12,12 +12,12 @@ const styles = {
 
 const wizardRoutes = [
   {
-    title: "Manage Users",
+    title: "Manage Organisation Users",
     path: "/wizard/users",
     icon: <SupervisedUserCircleIcon color="primary" style={styles.icon} />,
     panel: true,
     main: true,
-    restricted: ["WIZARD", "PROJECT_MANAGER"],
+    restricted: ["WIZARD"],
     component: UserSetupPage,
   },
 ]
