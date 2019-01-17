@@ -1,73 +1,3 @@
-// import React, { Component, Fragment } from "react"
-// import { withStyles } from "@material-ui/core/styles"
-// import { graphql, compose, withApollo, Query } from "react-apollo"
-// import { DragDropContext } from "react-beautiful-dnd"
-
-// // components
-// import PatientList from "./PatientList"
-// import RoomsList from "./RoomsList"
-
-// const styles = theme => ({
-//   root: {
-//     display: "flex",
-//     flex: "1 1 0",
-//   },
-//   patientWrapper: {
-//     width: "50%",
-//     height: `calc(100vh - 68px)`,
-//     overflow: "auto",
-//     padding: theme.spacing.unit * 3,
-//     boxSizing: "border-box",
-//   },
-// })
-// class AssignRoomingContainer extends Component {
-//   constructor(props) {
-//     super(props)
-//   }
-
-//   onBeforeDragStart = () => {
-//     /*...*/
-//   }
-
-//   onDragStart = () => {
-//     /*...*/
-//   }
-//   onDragUpdate = () => {
-//     /*...*/
-//   }
-//   onDragEnd = () => {
-//     // the only one that is required
-//   }
-
-//   render() {
-//     const { classes } = this.props
-//     // ToDo create rich getPatient query component card {id}
-//     // Will get everything dor the patient and will subscribe to tasks
-//     return (
-//       <DragDropContext
-//         onBeforeDragStart={this.onBeforeDragStart}
-//         onDragStart={this.onDragStart}
-//         onDragUpdate={this.onDragUpdate}
-//         onDragEnd={this.onDragEnd}>
-//         <div className={classes.root}>
-//           <div className={classes.patientWrapper}>
-//             <PatientList />
-//           </div>
-//           <div className={classes.patientWrapper}>
-//             <RoomsList />
-//           </div>
-//         </div>
-//       </DragDropContext>
-//     )
-//   }
-// }
-
-// export default compose(
-//   withStyles(styles, { withTheme: true }),
-//   // graphql(UPDATE_QUESTION, { name: "updateStockQuestion" }),
-//   withApollo
-// )(AssignRoomingContainer)
-
 import React, { Component } from "react"
 import { withStyles } from "@material-ui/core/styles"
 import ReactDOM from "react-dom"
@@ -77,7 +7,12 @@ import { graphql, compose, withApollo, Query } from "react-apollo"
 // components
 import PatientList from "./PatientList"
 import RoomsList from "./RoomsList"
-import DroppableRoomSpace from "./DroppableRoomSpace"
+// Queries
+import { ROOM_FEED } from "../../queries/roomFeed"
+// Mutations
+import { UPDATE_PATIENT } from "../../mutations/updatePatient"
+//constants
+import { ROOMS_PER_FETCH, ROOMS_FETCH_ORDER_BY } from "../../constants"
 
 const styles = theme => ({
   root: {
@@ -85,7 +20,7 @@ const styles = theme => ({
     flex: "1 1 0",
   },
   patientWrapper: {
-    width: "50%",
+    // width: "50%",
     height: `calc(100vh - 68px)`,
     overflow: "auto",
     padding: theme.spacing.unit * 3,
@@ -93,152 +28,137 @@ const styles = theme => ({
   },
 })
 
-// fake data generator
-const getItems = (count, offset = 0) =>
-  Array.from({ length: count }, (v, k) => k).map(k => ({
-    id: `item-${k + offset}`,
-    content: `item ${k + offset}`,
-  }))
-
-// a little function to help us with reordering the result
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list)
-  const [removed] = result.splice(startIndex, 1)
-  result.splice(endIndex, 0, removed)
-
-  return result
-}
-
-/**
- * Moves an item from one list to another list.
- */
-const move = (source, destination, droppableSource, droppableDestination) => {
-  try {
-    const sourceClone = Array.from(source)
-    const destClone = Array.from(destination)
-    const [removed] = sourceClone.splice(droppableSource.index, 1)
-
-    destClone.splice(droppableDestination.index, 0, removed)
-
-    const result = {}
-    result[droppableSource.droppableId] = sourceClone
-    result[droppableDestination.droppableId] = destClone
-
-    return result
-  } catch (e) {
-    console.log("Move error => ", e)
-  }
-}
-
-const grid = 8
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-  // some basic styles to make the items look a bit nicer
-  userSelect: "none",
-  padding: grid * 2,
-  margin: `0 0 ${grid}px 0`,
-
-  // change background colour if dragging
-  background: isDragging ? "lightgreen" : "grey",
-
-  // styles we need to apply on draggables
-  ...draggableStyle,
-})
-
-const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightblue" : "lightgrey",
-  padding: grid,
-  width: 250,
-})
-
 class AssignRoomingContainer extends Component {
-  state = {
-    items: getItems(10),
-    selected: getItems(5, 10),
+  _assignRoomToPatient = async (roomId, patientId) => {
+    await this.props.updatePatient({
+      variables: {
+        where: {
+          id: patientId,
+        },
+        data: {
+          allocatedRoom: {
+            connect: {
+              id: roomId,
+            },
+          },
+        },
+      },
+      update: (cache, { data: { updatePatient } }) => {
+        this._updateCacheAfterRoomAssign(cache, updatePatient, roomId)
+      },
+    })
   }
 
-  /**
-   * A semi-generic way to handle multiple lists. Matches
-   * the IDs of the droppable container to the names of the
-   * source arrays stored in the state.
-   */
-  id2List = {
-    droppable: "items",
-    droppable2: "selected",
+  _removeRoomFromPatient = async (patientId, roomId) => {
+    await this.props.updatePatient({
+      variables: {
+        where: {
+          id: patientId,
+        },
+        data: {
+          allocatedRoom: {
+            disconnect: true,
+          },
+        },
+      },
+      update: (cache, { data: { updatePatient } }) => {
+        this._updateCacheAfterRoomDisconnect(
+          cache,
+          updatePatient,
+          roomId,
+          patientId
+        )
+      },
+    })
   }
 
-  getList = id => this.state[this.id2List[id]]
+  _updateCacheAfterRoomDisconnect = (
+    cache,
+    updatePatient,
+    roomId,
+    patientId
+  ) => {
+    const cachedRooms = cache.readQuery({
+      query: ROOM_FEED,
+      variables: {
+        first: ROOMS_PER_FETCH,
+        skip: 0,
+        orderBy: ROOMS_FETCH_ORDER_BY,
+      },
+    })
+    const updateRoom = cachedRooms.roomFeed.rooms.find(
+      room => room.id === roomId
+    )
+    const indexToSplice = updateRoom.patients.findIndex(
+      patient => patient.id === patientId
+    )
+    console.log("constIndexToSplice => ", indexToSplice)
+
+    // This is mutating cache directly so we don't need t write to it with the function
+    updateRoom.patients.splice(indexToSplice, 1)
+  }
+
+  _updateCacheAfterRoomAssign = (cache, updatePatient, roomId) => {
+    const cachedRooms = cache.readQuery({
+      query: ROOM_FEED,
+      variables: {
+        first: ROOMS_PER_FETCH,
+        skip: 0,
+        orderBy: ROOMS_FETCH_ORDER_BY,
+      },
+    })
+    const updateRoom = cachedRooms.roomFeed.rooms.find(
+      room => room.id === roomId
+    )
+    // This is mutating cache directly so we don't need t write to it with the function
+    updateRoom.patients.push({
+      id: updatePatient.id,
+      name: updatePatient.name,
+      __typename: "Patient",
+    })
+
+    // cache.writeQuery({
+    //   query: ROOM_FEED,
+    //   roomFeed,
+    //   variables: {
+    //     first: ROOMS_PER_FETCH,
+    //     skip: 0,
+    //     orderBy: ROOMS_FETCH_ORDER_BY,
+    //   },
+    // })
+
+    console.groupEnd()
+  }
 
   onDragEnd = result => {
     try {
-      // const orgID = result.draggableId
-      // const userId = result.destination.droppableId
-      // this._addOrgToUser(orgID, userId)
+      if (
+        result.source.droppableId === "DroppableRooms" &&
+        result.reason === "DROP"
+      ) {
+        const roomId = result.draggableId
+        const patientId = result.destination.droppableId
+        this._assignRoomToPatient(roomId, patientId)
+      }
     } catch (e) {
       console.log("onDragEnd => ", e)
     }
-    // if (result.type === "ROOM") {
-    //   const { source, destination } = result
-    //   console.group("Debug Drag End")
-    //   console.log("result => ", result)
-    //   console.log("source => ", source)
-    //   console.log("destination=> ", destination)
-    //   console.groupEnd()
-    // try {
-    //   const orgID = result.draggableId
-    //   const userId = result.destination.droppableId
-    //   this._addOrgToUser(orgID, userId)
-    // } catch (e) {
-    //   // alert(`an error ${e}`)
-    // }
-    // }
-    // try {
-    //   const { source, destination } = result
-    //   console.group("Debug Drag End")
-    //   console.log("source => ", source)
-    //   console.log("destination=> ", destination)
-    //   console.groupEnd()
-    //   // dropped outside the list
-    //   if (!destination) {
-    //     return
-    //   }
-    //   if (source.droppableId === destination.droppableId) {
-    //     const items = reorder(
-    //       this.getList(source.droppableId),
-    //       source.index,
-    //       destination.index
-    //     )
-    //     let state = { items }
-    //     if (source.droppableId === "droppable2") {
-    //       state = { selected: items }
-    //     }
-    //     this.setState(state)
-    //   } else {
-    //     const result = move(
-    //       this.getList(source.droppableId),
-    //       this.getList(destination.droppableId),
-    //       source,
-    //       destination
-    //     )
-    //     this.setState({
-    //       items: result.droppable,
-    //       selected: result.droppable2,
-    //     })
-    //   }
-    // } catch (e) {
-    //   console.log("Drag error => ", e)
-    // }
   }
 
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   render() {
     const { classes } = this.props
+    console.log("This.props => ", this.props)
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <div className={classes.root}>
           <div className={classes.patientWrapper}>
-            <PatientList />
+            <PatientList
+              unAssignRoom={(patientId, roomId) =>
+                this._removeRoomFromPatient(patientId, roomId)
+              }
+            />
           </div>
           <div className={classes.patientWrapper}>
             <RoomsList />
@@ -254,5 +174,6 @@ class AssignRoomingContainer extends Component {
 export default compose(
   withStyles(styles, { withTheme: true }),
   // graphql(UPDATE_QUESTION, { name: "updateStockQuestion" }),
+  graphql(UPDATE_PATIENT, { name: "updatePatient" }),
   withApollo
 )(AssignRoomingContainer)

@@ -8,8 +8,33 @@ import { PATIENT_FEED } from "../../queries/patientFeed"
 //components
 import SearchFilter from "../../components/Inputs/SearchFilter"
 import DroppableRoomSpace from "./DroppableRoomSpace"
+import DraggablePatientCard from "./DraggablePatientCard"
 import Spinner from "../../components/Loaders/Spinner"
 import LinerProgressBar from "../../components/Loaders/LinerProgressBar"
+
+import { Droppable, Draggable } from "react-beautiful-dnd"
+import Chip from "@material-ui/core/Chip"
+import FaceIcon from "@material-ui/icons/Face"
+const grid = 8
+const getListStyle = isDraggingOver => ({
+  // border: isDraggingOver ? "2px dashed lightgreen" : "2px dashed lightblue",
+  // background: isDraggingOver ? "lightblue" : "none",
+  padding: grid,
+  width: 380,
+})
+
+const getItemStyle = (isDragging, draggableStyle) => ({
+  // some basic styles to make the items look a bit nicer
+  userSelect: "none",
+  padding: grid * 2,
+  margin: `0 0 ${grid}px 0`,
+
+  // change background colour if dragging
+  background: isDragging ? "lightgreen" : "grey",
+
+  // styles we need to apply on draggables
+  ...draggableStyle,
+})
 
 class PatientList extends Component {
   state = {
@@ -49,6 +74,7 @@ class PatientList extends Component {
 
   render() {
     const { searchText } = this.state
+    const { unAssignRoom } = this.props
     return (
       <Query query={PATIENT_FEED} variables={this._getQueryVariables()}>
         {({
@@ -123,31 +149,30 @@ class PatientList extends Component {
                 handleChange={v => this.setState({ searchText: v })}
               />
 
-              {patientsList.map((patient, patientId) => {
-                const { id, name, dob, careLevel, allocatedRoom } = patient
-                return (
-                  <div>
-                    <p>{id}</p>
-                    <p>{name}</p>
-                    <p>{dob}</p>
-                    <p>{careLevel}</p>
-                    {/* <p>
-                      {allocatedRoom ? (
-                        allocatedRoom.name
-                      ) : (
-                        <DroppableRoomSpace id={id} items={[]} type="ROOM" />
-                      )}
-                    </p> */}
-                    <DroppableRoomSpace
-                      id={id}
-                      type="ROOM"
-                      removeRoom={id => alert("Remove room " + id)}
-                      items={allocatedRoom ? [{ ...allocatedRoom }] : []}
-                    />
-                    <hr />
+              <Droppable
+                droppableId={"Patient-droppable-list"}
+                type={"PATIENT"}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    style={getListStyle(snapshot.isDraggingOver)}>
+                    {provided.placeholder}
+                    {patientsList.map((patient, patientIdx) => {
+                      return (
+                        <div>
+                          <DraggablePatientCard
+                            index={patientIdx}
+                            patient={patient}
+                            removeRoom={roomId =>
+                              unAssignRoom(patient.id, roomId)
+                            }
+                          />
+                        </div>
+                      )
+                    })}
                   </div>
-                )
-              })}
+                )}
+              </Droppable>
             </Fragment>
           )
         }}

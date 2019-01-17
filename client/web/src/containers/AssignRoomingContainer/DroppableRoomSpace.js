@@ -1,105 +1,89 @@
-import React, { Component, Fragment } from "react"
-import { Droppable, Draggable } from "react-beautiful-dnd"
-import Card from "@material-ui/core/Card"
-import CardActions from "@material-ui/core/CardActions"
-import CardContent from "@material-ui/core/CardContent"
-import Typography from "@material-ui/core/Typography"
-import FormGroup from "@material-ui/core/FormGroup"
-import FormControlLabel from "@material-ui/core/FormControlLabel"
-import Switch from "@material-ui/core/Switch"
+import React from "react"
+import PropTypes from "prop-types"
+import { withStyles } from "@material-ui/core/styles"
+import { Droppable } from "react-beautiful-dnd"
 import Chip from "@material-ui/core/Chip"
+//icons
 import FaceIcon from "@material-ui/icons/Face"
+import DragAndDropIcon from "@material-ui/icons/FilterNone"
 const grid = 8
-const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightblue" : "lightgrey",
+const getListStyle = (isDraggingOver, theme) => ({
+  // border: isDraggingOver
+  //   ? `2px dashed ${theme.palette.primary.main}`
+  //   : `2px dashed ${theme.palette.secondary.main}`,
+  background: isDraggingOver ? `${theme.palette.secondary.light}` : "none",
   padding: grid,
-  width: 250,
-})
-const getItemStyle = (isDragging, draggableStyle) => ({
-  // some basic styles to make the items look a bit nicer
-  userSelect: "none",
-  padding: grid * 2,
-  margin: `0 0 ${grid}px 0`,
-
-  // change background colour if dragging
-  background: isDragging ? "lightgreen" : "grey",
-
-  // styles we need to apply on draggables
-  ...draggableStyle,
+  // width: 250,
 })
 
-const DroppableRoomSpace = ({ id, items, type, removeRoom }) => {
+const styles = theme => ({
+  root: {},
+  dropSpace: {
+    minHeight: 50,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    // background: theme.palette.secondary.light,
+  },
+  iconWrapper: {
+    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 2}px ${theme
+      .spacing.unit * 2}px 0`,
+  },
+})
+
+const DroppableRoomSpace = ({
+  classes,
+  theme,
+  id,
+  items,
+  type,
+  removeRoom,
+}) => {
+  if (items.length > 0) {
+    return (
+      <div>
+        {items &&
+          items.map((item, orgIdx) => {
+            return (
+              <Chip
+                key={orgIdx}
+                icon={<FaceIcon />}
+                label={item.name}
+                onDelete={() => removeRoom(item.id)}
+                // className={classes.chip}
+                color="secondary"
+                variant="outlined"
+              />
+            )
+          })}
+      </div>
+    )
+  }
+
   return (
     <Droppable droppableId={id} type={type}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
-          style={getListStyle(snapshot.isDraggingOver)}>
-          {items.length < 1 && <div>[DROP ROOM TO ALLOCATE]</div>}
-          {/* {items.map((item, index) => (
-            <Draggable key={item.id} draggableId={item.id} index={index}>
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                  style={getItemStyle(
-                    snapshot.isDragging,
-                    provided.draggableProps.style
-                  )}>
-                  {item.id}
-                  {item.name}
-                  {item.content}
-                </div>
-              )}
-            </Draggable>
-          ))} */}
-          {items &&
-            items.map((item, orgIdx) => {
-              return (
-                <Chip
-                  key={orgIdx}
-                  icon={<FaceIcon />}
-                  label={item.name}
-                  onDelete={() => removeRoom(item.id)}
-                  // className={classes.chip}
-                  color="secondary"
-                  variant="outlined"
-                />
-              )
-            })}
+          style={getListStyle(snapshot.isDraggingOver, theme)}>
+          {items.length < 1 && (
+            <div className={classes.dropSpace}>
+              <div className={classes.iconWrapper}>
+                <DragAndDropIcon />
+              </div>
+              Drop room to allocate
+            </div>
+          )}
+
           {provided.placeholder}
         </div>
       )}
     </Droppable>
-    // <Droppable droppableId={id} type="ROOM">
-    //   {(provided, snapshot) => (
-    //     <div
-    //       ref={provided.innerRef}
-    //       style={{
-    //         backgroundColor: snapshot.isDraggingOver ? "blue" : "grey",
-    //       }}
-    //       {...provided.droppableProps}>
-    //       <p>Drop Organisation here to add</p>
-    //       {provided.placeholder}
-    //       {items &&
-    //         items.map((item, orgIdx) => {
-    //           return (
-    //             <Chip
-    //               key={orgIdx}
-    //               icon={<FaceIcon />}
-    //               label={item.name}
-    //               // onDelete={() => removeOrg(org.id)}
-    //               // className={classes.chip}
-    //               color="secondary"
-    //               variant="outlined"
-    //             />
-    //           )
-    //         })}
-    //     </div>
-    //   )}
-    // </Droppable>
   )
 }
 
-export default DroppableRoomSpace
+DroppableRoomSpace.propTypes = {
+  classes: PropTypes.object.isRequired,
+}
+
+export default withStyles(styles, { withTheme: true })(DroppableRoomSpace)

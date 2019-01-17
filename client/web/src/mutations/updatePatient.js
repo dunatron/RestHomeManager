@@ -8,6 +8,25 @@ export const UPDATE_PATIENT = gql`
     updatePatient(data: $data, where: $where) {
       id
       name
+      dob
+      careLevel
+      allocatedRoom {
+        id
+        name
+      }
+      family {
+        id
+        name
+      }
+      contacts {
+        name
+      }
+      tasks {
+        id
+        name
+        note
+        priorityLevel
+      }
     }
   }
 `

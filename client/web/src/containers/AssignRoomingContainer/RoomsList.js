@@ -1,23 +1,22 @@
 import React, { Component, Fragment } from "react"
 import { graphql, compose, withApollo, Query } from "react-apollo"
-import { ROOMS_PER_FETCH } from "../../constants"
+
 // import Draggable from "react-draggable" // Both at the same time
 import { Droppable, Draggable } from "react-beautiful-dnd"
 import { withStyles } from "@material-ui/core/styles"
 
 // Queries
 import { ROOM_FEED } from "../../queries/roomFeed"
-// containers
 //components
 import SearchFilter from "../../components/Inputs/SearchFilter"
 import DraggableRoomCard from "./DraggableRoomCard"
-import Chip from "@material-ui/core/Chip"
-import FaceIcon from "@material-ui/icons/Face"
+//constants
+import { ROOMS_PER_FETCH, ROOMS_FETCH_ORDER_BY } from "../../constants"
 const grid = 8
 const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightblue" : "lightgrey",
-  padding: grid,
-  width: 300,
+  // background: isDraggingOver ? "lightblue" : "lightgrey",
+  // padding: grid,
+  width: 380,
 })
 const getItemStyle = (isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
@@ -26,7 +25,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   margin: `0 0 ${grid}px 0`,
 
   // change background colour if dragging
-  background: isDragging ? "lightgreen" : "grey",
+  // background: isDragging ? "lightgreen" : "grey",
 
   // styles we need to apply on draggables
   ...draggableStyle,
@@ -56,7 +55,7 @@ class RoomsList extends Component {
   _getQueryVariables = () => {
     const skip = 0
     const first = ROOMS_PER_FETCH
-    const orderBy = "createdAt_DESC"
+    const orderBy = ROOMS_FETCH_ORDER_BY
     return { first, skip, orderBy }
   }
 
@@ -65,7 +64,7 @@ class RoomsList extends Component {
       variables: {
         skip: currCount + 1,
         first: ROOMS_PER_FETCH,
-        orderBy: "createdAt_DESC",
+        orderBy: ROOMS_FETCH_ORDER_BY,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev
@@ -110,7 +109,7 @@ class RoomsList extends Component {
             // note below return is because the list changes when we fetch more meaning if we drag over druring an update it crashes
             return (
               <div>
-                <h1>Loading Patients</h1>
+                <h1>Loading Rooms</h1>
               </div>
             )
           }
@@ -141,7 +140,7 @@ class RoomsList extends Component {
                 value={searchText}
                 handleChange={v => this.setState({ searchText: v })}
               />
-              <Droppable droppableId={"DropppableRooms"} type="ROOM">
+              <Droppable droppableId={"DroppableRooms"} type="ROOM">
                 {(provided, snapshot) => (
                   <div
                     ref={provided.innerRef}
@@ -150,37 +149,7 @@ class RoomsList extends Component {
                       const { id, name, size, patients } = room
                       return (
                         <div key={idx}>
-                          {/* <p>{id}</p>
-                          <p>{name}</p>
-                          <p>{size}</p> */}
-                          {/* <DraggableRoomCard id={id} index={idx} room={room} /> */}
-                          <Draggable key={id} draggableId={id} index={idx}>
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}>
-                                <p>{name}</p>
-                                <p>size: {size}</p>
-                                <p>
-                                  {patients.length}/{size}
-                                </p>
-                                {patients &&
-                                  patients.map((patient, idx) => {
-                                    return (
-                                      <div>
-                                        <p>{patient.name}</p>
-                                      </div>
-                                    )
-                                  })}
-                              </div>
-                            )}
-                          </Draggable>
-                          <hr />
+                          <DraggableRoomCard index={idx} room={room} />
                         </div>
                       )
                     })}

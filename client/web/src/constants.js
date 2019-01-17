@@ -2,8 +2,9 @@ export const AUTH_TOKEN = "auth-token"
 export const ORGANISATION_ID = "organisation-id"
 export const PERSISTENT_STORE_KEYS_ARR = ["user"]
 export const QUESTIONS_PER_PAGE = 25
-export const ROOMS_PER_FETCH = 25
-export const PATIENTS_PER_FETCH = 2
+export const ROOMS_PER_FETCH = 3
+export const ROOMS_FETCH_ORDER_BY = "createdAt_DESC"
+export const PATIENTS_PER_FETCH = 100
 
 // ROLES
 export const ROLE_WIZARD = { name: "Wizard", value: "WIZARD" }
